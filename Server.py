@@ -1,9 +1,9 @@
 import socket
 
 
-
 host = "localhost"
 port = 50007
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.bind((host, port))
     sock.listen(1)
@@ -13,12 +13,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         message = ""
         while True:
             chunk = conn.recv(1024)
-            if not chunk:
-                break
 
             message += chunk.decode("utf-8")
 
-            if message[:-3] == "EOD":
+            if message[-3:] == "EOD":
+                message = message[:-3]
                 break
 
-print(message)
+print("Message received was:\n" + message)

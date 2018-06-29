@@ -1,8 +1,8 @@
 import socket
 from threading import *
-import Util
-from Server.ConversationManager import ConversationManager
-from Server.SocketManager import SocketManager
+
+from Util.CommunicationHelper import send_message, receive_message
+from Util.ThreadSafeDict import SafeDict
 
 ip = '127.0.0.1'
 port = 5005
@@ -10,8 +10,8 @@ port = 5005
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((ip, port))
 
-conversation_manager = ConversationManager()
-socket_manager = SocketManager()
+conversation_manager = SafeDict()
+socket_manager = SafeDict()
 
 
 class Client(Thread):
@@ -23,19 +23,19 @@ class Client(Thread):
 
     def run(self):
         while 1:
-            message = Util.receive_message(self.sock)
+            message = receive_message(self.sock)
             message = message.decode("utf-8")
 
             username, message = message.split(":", 1)
 
             if "ESTABLISHCONNECTION" in message:
                 recipient = message.split("ESTABLISHCONNECTION", 1)[1]
-                conversation_manager.add_conversation(username, recipient)
-                socket_manager.add_client_socket(username, self.sock)
+                conversation_manager.add(username, recipient)
+                socket_manager.add(username, self.sock)
             else:
-                recipient = conversation_manager.get_recipient(username)
-                recipient_socket = socket_manager.get_client_socket(recipient)
-                Util.send_message(recipient_socket, message)
+                recipient = conversation_manager.get(username)
+                recipient_socket = socket_manager.get(recipient)
+                send_message(recipient_socket, message)
 
 
 s.listen(2)

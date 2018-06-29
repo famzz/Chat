@@ -24,6 +24,7 @@ class Client(Thread):
     def run(self):
         while 1:
             message = Util.receive_message(self.sock)
+            message = message.decode("utf-8")
 
             username, message = message.split(":", 1)
 

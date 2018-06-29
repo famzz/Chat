@@ -17,7 +17,7 @@ def send_message(user, message):
 
 def receive_message():
     while True:
-        msg = Util.receive_message(sock)
+        msg = Util.receive_message(sock).decode("utf-8")
         print(msg)
 
 

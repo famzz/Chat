@@ -1,6 +1,7 @@
 import socket
 import threading
 from Util.CommunicationHelper import send_message, receive_message
+from tkinter import simpledialog, Tk
 
 
 def prep_message(user, msg):
@@ -19,11 +20,20 @@ class Client:
         self.recipient = ""
 
     def start(self):
-        self.username = input("Please enter your username:\n")
+        username_window = Tk()
+        username_window.focus()
+        username_window.withdraw()
+        self.username = simpledialog.askstring("Username", "Please enter your username", parent=username_window)
+        username_window.destroy()
 
-        self.recipient = input("Please enter the user that you would like to talk to:\n")
+        recipient_window = Tk()
+        recipient_window.focus()
+        recipient_window.withdraw()
+        self.recipient = simpledialog.askstring("Recipient", "Please enter username of user you would like to talk to",
+                                                parent=recipient_window)
+        recipient_window.destroy()
 
-        send_message(self.sock, prep_message(self.username, "ESTABLISHCONNECTION" + self.recipient))
+        self.send("ESTABLISHCONNECTION" + self.recipient)
 
         threading.Thread(target=self.receiver).start()
 
@@ -34,3 +44,4 @@ class Client:
         while True:
             msg = receive_message(self.sock).decode("utf-8")
             print(self.recipient + ": " + msg)
+

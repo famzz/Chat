@@ -1,4 +1,5 @@
 import struct
+from socket import timeout
 
 
 def send_message(sock, msg):
@@ -19,9 +20,12 @@ def receive_message(sock):
 
 def receive_all(sock, n):
     data = b''
-    while len(data) < n:
-        packet = sock.recv(n - len(data))
-        if not packet:
-            return None
-        data += packet
-    return data
+    try:
+        while len(data) < n:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data += packet
+        return data
+    except timeout:
+        pass

@@ -1,6 +1,8 @@
 import socket
-import threading
-from Util.CommunicationHelper import send_message, receive_message
+from time import sleep
+
+from Util.CommunicationHelper import send_message
+from Client.Receiver import Receiver
 from tkinter import simpledialog, Tk
 
 
@@ -15,33 +17,38 @@ class Client:
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((host, port))
+        self.sock.settimeout(0.1)
 
         self.username = ""
         self.recipient = ""
 
+        self.client_message_text = None
+        self.message_receiver = None
+
     def start(self):
         username_window = Tk()
-        username_window.focus()
         username_window.withdraw()
         self.username = simpledialog.askstring("Username", "Please enter your username", parent=username_window)
-        username_window.destroy()
+        username_window.quit()
 
         recipient_window = Tk()
-        recipient_window.focus()
         recipient_window.withdraw()
         self.recipient = simpledialog.askstring("Recipient", "Please enter username of user you would like to talk to",
                                                 parent=recipient_window)
-        recipient_window.destroy()
+        recipient_window.quit()
 
         self.send("ESTABLISHCONNECTION" + self.recipient)
 
-        threading.Thread(target=self.receiver).start()
+        self.message_receiver = Receiver(self.sock, self.recipient)
 
     def send(self, message):
         send_message(self.sock, prep_message(self.username, message))
 
-    def receiver(self):
-        while True:
-            msg = receive_message(self.sock).decode("utf-8")
-            print(self.recipient + ": " + msg)
+    def set_message_text(self, message_text):
+        self.message_receiver.set_message_text(message_text)
 
+    def close(self):
+        self.message_receiver.close()
+        sleep(0.2)
+        self.message_receiver.join()
+        self.sock.close()

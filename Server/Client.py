@@ -14,15 +14,16 @@ class Client(threading.Thread):
     def run(self):
         while 1:
             message = receive_message(self.sock)
-            message = message.decode("utf-8")
+            if message is not None:
+                message = message.decode("utf-8")
 
-            username, message = message.split(":", 1)
+                username, message = message.split(":", 1)
 
-            if "ESTABLISHCONNECTION" in message:
-                recipient = message.split("ESTABLISHCONNECTION", 1)[1]
-                self.conversation_manager.add(username, recipient)
-                self.socket_manager.add(username, self.sock)
-            else:
-                recipient = self.conversation_manager.get(username)
-                recipient_socket = self.socket_manager.get(recipient)
-                send_message(recipient_socket, message)
+                if "ESTABLISHCONNECTION" in message:
+                    recipient = message.split("ESTABLISHCONNECTION", 1)[1]
+                    self.conversation_manager.add(username, recipient)
+                    self.socket_manager.add(username, self.sock)
+                else:
+                    recipient = self.conversation_manager.get(username)
+                    recipient_socket = self.socket_manager.get(recipient)
+                    send_message(recipient_socket, message)

@@ -1,5 +1,4 @@
 import socket
-from time import sleep
 
 from Util.CommunicationHelper import send_message
 from Client.Receiver import Receiver
@@ -17,25 +16,23 @@ class Client:
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((host, port))
-        self.sock.settimeout(0.1)
 
         self.username = ""
         self.recipient = ""
 
-        self.client_message_text = None
         self.message_receiver = None
 
     def start(self):
         username_window = Tk()
         username_window.withdraw()
         self.username = simpledialog.askstring("Username", "Please enter your username", parent=username_window)
-        username_window.quit()
+        username_window.destroy()
 
         recipient_window = Tk()
         recipient_window.withdraw()
         self.recipient = simpledialog.askstring("Recipient", "Please enter username of user you would like to talk to",
                                                 parent=recipient_window)
-        recipient_window.quit()
+        recipient_window.destroy()
 
         self.send("ESTABLISHCONNECTION" + self.recipient)
 
@@ -48,7 +45,5 @@ class Client:
         self.message_receiver.set_message_text(message_text)
 
     def close(self):
-        self.message_receiver.close()
-        sleep(0.2)
         self.message_receiver.join()
         self.sock.close()

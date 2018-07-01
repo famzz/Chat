@@ -1,4 +1,5 @@
 import threading
+import select
 from Util.CommunicationHelper import receive_message, send_message
 
 
@@ -13,8 +14,10 @@ class Client(threading.Thread):
 
     def run(self):
         while 1:
-            message = receive_message(self.sock)
-            if message is not None:
+            message = None
+            if select.select([self.sock], [], [], 0.1)[0]:
+                message = receive_message(self.sock)
+            if message:
                 message = message.decode("utf-8")
 
                 username, message = message.split(":", 1)

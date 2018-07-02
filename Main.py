@@ -8,4 +8,5 @@ if "__main__" in __name__:
 
     client_window = tkinter.Tk()
     Client.GUI.ClientWindow.ClientWindow(client_window, client)
+    client.get_pending_messages()
     client_window.mainloop()

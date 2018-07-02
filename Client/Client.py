@@ -1,8 +1,9 @@
 import socket
+import sys
 
 from Util.CommunicationHelper import send_message
 from Client.Receiver import Receiver
-from tkinter import simpledialog, Tk
+from tkinter import simpledialog, Tk, messagebox
 
 
 def prep_message(user, msg):
@@ -15,7 +16,16 @@ class Client:
         port = 5005
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        try:
+            self.sock.connect((host, port))
+        except ConnectionRefusedError:
+            error_window = Tk()
+            error_window.withdraw()
+            error_message = "Please start the server on the host machine at " + host + ":" + str(port)
+            messagebox.showerror("Server not running", error_message)
+            error_window.destroy()
+
+            sys.exit()
 
         self.username = ""
         self.recipient = ""
@@ -43,6 +53,9 @@ class Client:
 
     def set_message_text(self, message_text):
         self.message_receiver.set_message_text(message_text)
+
+    def get_pending_messages(self):
+        self.send("READYFORPENDINGMESSAGES")
 
     def close(self):
         self.message_receiver.join()

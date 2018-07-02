@@ -7,6 +7,8 @@ class ClientWindow:
     def __init__(self, root, client):
         self.root = root
         self.client = client
+
+        root.title(client.username)
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         text = ClientMessageText.ClientText(root)

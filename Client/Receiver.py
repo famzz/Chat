@@ -19,7 +19,10 @@ class Receiver(threading.Thread):
                 msg = receive_message(self.socket)
             if msg:
                 msg = msg.decode("utf-8")
-                self.message_text.insert(self.recipient + ": " + msg)
+                if "NOTONLINE" in msg:
+                    self.message_text.insert(self.recipient + " will receive your message when they come online.")
+                else:
+                    self.message_text.insert(self.recipient + ": " + msg)
 
     def join(self, timeout=None):
         self.stoprequest.set()

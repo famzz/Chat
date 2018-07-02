@@ -11,8 +11,9 @@ s.bind((ip, port))
 
 conversation_manager = SafeDict()
 socket_manager = SafeDict()
+message_manager = SafeDict()
 
 s.listen(2)
 while 1:
     client_socket, address = s.accept()
-    Client(client_socket, address, conversation_manager, socket_manager)
+    Client(client_socket, address, conversation_manager, socket_manager, message_manager)

@@ -3,6 +3,9 @@ import socket
 from Server.Client import Client
 from Util.ThreadSafeDict import SafeDict
 
+# TODO: Add GUI to server.
+# TODO: Make server threads exit gracefully when closed.
+
 ip = '127.0.0.1'
 port = 5005
 

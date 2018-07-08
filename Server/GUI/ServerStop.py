@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import sys
 
 
@@ -7,13 +8,14 @@ class ServerStop:
         self.parent = parent
         self.server = server
 
-        self.stop_button = tk.Button(text="Terminate", command=self.stop)
+        self.stop_button = tk.Button(parent, text="Terminate", command=self.stop)
 
     def stop(self):
-        self.server.close()
-        self.server.s.close()
-        self.parent.destroy()
-        sys.exit()
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            self.server.close()
+            self.server.s.close()
+            self.parent.destroy()
+            sys.exit()
 
     def get_tkinter_button(self):
         return self.stop_button

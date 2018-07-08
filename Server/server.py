@@ -39,10 +39,8 @@ class Server(threading.Thread):
     def kill_clients(self):
         for c in self.clients:
             c.join()
-            print("Killed")
 
     def close(self, timeout=None):
         self.kill_clients()
         self.stop_request.set()
         super(Server, self).join(timeout)
-

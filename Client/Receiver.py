@@ -8,12 +8,12 @@ class Receiver(threading.Thread):
         threading.Thread.__init__(self)
         self.socket = socket
         self.recipient = recipient
-        self.stoprequest = threading.Event()
+        self.stop_request = threading.Event()
         self.message_text = None
         self.start()
 
     def run(self):
-        while not self.stoprequest.is_set():
+        while not self.stop_request.is_set():
             msg = None
             if select.select([self.socket], [], [], 0.1)[0]:
                 msg = receive_message(self.socket)
@@ -25,7 +25,7 @@ class Receiver(threading.Thread):
                     self.message_text.insert(self.recipient + ": " + msg)
 
     def join(self, timeout=None):
-        self.stoprequest.set()
+        self.stop_request.set()
         super(Receiver, self).join(timeout)
 
     def set_message_text(self, message_text):
